@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22></text></svg>">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+    
+    
+    <!-- Navigation-->
+       <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="\">Commencer a Shopper</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="boutique">Produits</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Autre</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="connexion">Connexion</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="inscription">Inscription</a></li>
+                                <li><a class="dropdown-item" href="order/create">Order</a></li>
+                            </ul>
+                        </li>
+                        
+                    </ul>
+                    <form class="d-flex">
+                        <button class="btn btn-outline-dark" type="submit">
+                            
+                             <a class="dropdown-item" href="mon-panier">Mon Panier</a>
+                            
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        
+        <!-- Section-->
+        
+
+        {% include '_partials/_flash.html.twig' %}
+        {% block body %}
+     <main class="page-wrapper">
+        {% if cart|length > 0 %}
+        <div class="container position-relative zindex-2 pt-5 pb-lg-5 pb-md-4 pb-2">
+        <form action='{{ path('order_index')}}'>
+          <div class='row'>
+             <div class='col-lg-12 offset-lg-1 pt-1'>
+                
+                <h5 >Ajouter d'autres articles disponibles sur le site <a href="{{ path('shop_index')}}" class="btn btn-primary">Voir les articles</a></h5>
+                <a href="{{ path('cart_removeAll')}}" class="btn btn-primary" style="background-color:red; color:white; border: none;">Supprimer tout mon panier</a>
+                {% set total = null %}
+                {% for item in cart %}
+                {% set total = total + (item.product.price * item.quantity ) %}
+                <div class="d-sm-flex align-items-center border-top py-4">
+                    <a class="d-inline-block flex-shrink-0 bg-secondary rounded-1 p-sm-2 p-xl-3 mb-2 mb-sm-0" href="#">
+                        <img src="{{ vich_uploader_asset(item.product,'attachementFile') }}" width="110" alt="Product" style="width: 150px; height: 120px;"></a>
+                    <div class="w-100 pt-1 ps-sm-4">
+                       <div class="d-flex">
+                           <div class="me-3">
+                               <h3 class="h5 mb-2">{{ item.product.title }}</h3>
+                               <p class="mb-2">{{ item.product.subtitle }}</p>
+                            </div>
+                            <div class="text-end ms-auto">
+                                <div class="fs-5 mb-2">{{ ((item.product.price / 100)* item.quantity)|number_format(2,',','.')}} € </div>
+                            </div>
+                        </div>
+                        <div class="count-input ms-n3">
+                            <a href="{{ path('cart_decrease' , {id: item.product.id}) }}" class="btn btn-icon fs-xl" data-decrement>-</a>
+                            <input class="form-control" type="number" value="{{ item.quantity }}" readonly>
+                            <a href="{{ path('cart_add' , {id: item.product.id}) }}" class="btn btn-icon fs-xl" data-increment>+</a>
+                        </div>
+                        <div class="nav justify-content-end mt-n5 mt-sm-n3">
+                            <a class="nav-link fs-xl p-2" href="{{ path('cart_remove', {id: item.product.id}) }}" data-bs-toggle="tooltip" title="Remove">
+                               <i class="ai-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+{% endfor %}
+<ul class="list-unstyle py-3 mb-0">
+  <h6 class="d-flex justify-content-between mb-2">Nombre de produit:<span class="fw-semibold ms-2">{{ (cart|length) }}</span></h6>
+</ul>
+<div class="d-flex align-items-center justify-content-between border-top fs-xl pt-4">
+<h6>Total:</h6><span class="fs-3 fw-semibold text-dark ms-2">{{ ((total / 100))|number_format(2,',','.')}} €</span></div>
+<button class="btn btn-lg btn-primary w-100 w-sm-auto mt-4" type="submit" style = "display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    background-color: #45a049;">Valider mon panier</button>
+</div>
+</div>
+</form>
+</div>
+{% else %}
+<div class="container d-flex flex-column justify-content-center min-vh-100 py-5">
+   <div class="text-center pt-4 mt-lg-2">
+     <h1 class="display-5">Votre panier est vide</h1>
+     <p class="fs-lg pb-2 pb-md-0 mb-4 mb-md-5">Commencez votre shopping des maintenant a travers nos articles</p>
+     <a href="{{ path('shop_index') }}"  class="btn btn-primary" >Voir les produits</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+        
+
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

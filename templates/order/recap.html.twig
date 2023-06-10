@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Verifier la commande!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22></text></svg>">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+    {% include '_partials/_flash.html.twig' %}
+    
+    <!-- Navigation-->
+       <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="\">Commencer a Shopper</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/boutique">Produits</a></li>
+                       
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Autre</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/connexion">Connexion</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="/inscription">Inscription</a></li>
+                                <li><a class="dropdown-item" href="/order/create">Order</a></li>
+                            </ul>
+                        </li>
+                        
+                    </ul>
+                    <form class="d-flex">
+                        <button class="btn btn-outline-dark" type="submit">
+                            
+                             <a class="dropdown-item" href="/mon-panier">Mon Panier</a>
+                            
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+         <!-- Section-->
+       
+
+        {% include '_partials/_flash.html.twig' %}
+        
+
+       
+        
+    </body>
+</html>
+
+
+
+{% block body %}
+
+
+ <div style='width:52.5%;'></div>
+     <div>
+         <div>
+             <div>
+                <nav aria-label='breadcrumb'>
+                    
+                 </nav>
+                 <h1 style="margin:10px">Verifier votre commande</h1>
+                 <h4 style="margin:10px">1.<span>Les details d'expedition</span>
+                 </h3>
+                 <div>
+                    <input type='radio' name=Shipping' checked>
+                    <label><apan>
+                        
+                         <span><span>{{ transporter.title }}</span></span>
+                       <span>{{(transporter.price / 100)|number_format(2,',','.')}} €</span>
+                    </label>
+                 </div>
+                 <h4 style="margin:10px">2.<span>
+                      Adress pour la livraison</span></h4>
+                 <div>
+                     <input type='radio' name=Shipping' checked>
+                     <label>
+                         <span>{{ delivery | raw }}</span>
+                     </label>
+                 </div>
+
+                 <div>
+                  <h4 style="margin:10px ">Recapitulatif de la commande<span>({{ recapCart|length }} type(s) de produits )</span></h4>
+                 {% set total=null %}
+                 {% for item in recapCart %}
+                 {% set total=total + (item.product.price * item.quantity) %}
+                    <div>
+                    <h6 style="margin:10px">{{ item.product.title }}</h6>
+                       <img src='{{ vich_uploader_asset(item.product,'attachementFile') }}' width='110' alt='{{item.product.title }}' style="margin:10px;border-radius: 30%;width: 150px; height: 140px;"></a>
+                     <div>
+                        <div>
+                           <div style='position: relative; top: 15px;'>
+                              
+                              <p style="margin:10px">{{ item.product.subtitle }}</p>
+                            </div>
+                            <div>
+                               <h6 style="margin:10px"> Quantite : x{{item.quantity}} <br> Prix du produit: {{ (item.product.price / 100)|number_format(2,',','.') }} €</h6>
+                            </div>
+                        </div>
+                        <div>
+                           <a href='{{ path('cart_remove', {id:item.product.id}) }}' data-bs-toggle='tooltip' title='Remove'>
+                              
+                            </a><br>
+                         </div>
+                     </div>
+                </div>
+
+                {% endfor %}
+
+
+                 <ul>
+                      <li><strong>Sous-Total:</h1><span>{{(total / 100)|number_format(2,',','.')}}€</span></li>
+                      <li>Frais de port:<span>{{(transporter.price / 100)|number_format(2,',','.')}}€</span></li>
+                 </ul>
+                 <div style="margin:10px;">Total:<span>{{(total / 100 + (transporter.price / 100))|number_format(2,',','.')}}€</span>
+                 </div>
+                 <div>
+                   {% if method=='stripe' %}
+                       <form method='POST' action='#'>
+                           <button type='submit' style='border-radius: 6px; position:relative; top: 20px;'>Payer par stripe| {{(total / 100 + (transporter.price / 100))|number_format(2,',','.')}}€</button>
+                       </form>
+                   {% else %}
+                       <form method='POST' action='#'>
+                           <buttontype='submit' style='border-radius: 6px; position:relative; top: 20px;'>Payer par Paypal | {{(total / 100 + (transporter.price / 100))|number_format(2,',','.')}}€</button>
+                       </form>
+                   {% endif %}
+                  </div>
+               </div>
+            </div>
+          </div>
+
+<footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+    
